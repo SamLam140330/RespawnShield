@@ -1,0 +1,21 @@
+{
+	"Name" : "SamLam140330.RespawnShield",
+	"Description" : "Add a shield for protection when you respawn",
+	"Version": "1.0.0",
+	"LoadPriority": 2,
+	"ConVars": [
+		{
+			"Name": "rs_shield_time",
+			"DefaultValue": "2.5"
+		}
+	],
+	"Scripts": [
+		{
+			"Path": "respawnShield.nut",
+			"RunOn": "SERVER && MP",
+			"ServerCallback": {
+				"After": "RespawnInit"
+			}
+		}
+	]
+}
