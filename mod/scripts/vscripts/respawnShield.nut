@@ -27,7 +27,7 @@ void function EnableProtectShield() {
 
 void function RespawnProtectThread(entity player) {
     #if SERVER
-    if (player != null) {
+    try {
         WaitFrame();
         player.SetInvulnerable();
         entity bubbleShield = CreateEntity("prop_dynamic");
@@ -67,8 +67,8 @@ void function RespawnProtectThread(entity player) {
         file.shield[player] <- bubbleShield;
         EmitSoundOnEntity(bubbleShield, "BubbleShield_Sustain_Loop");
         thread CleanupRespawnProtect(player, bubbleShield, bubbleShieldFXs);
-    } else {
-        printl("[respawnShield][ERROR] Player is NULL");
+    } catch(exception) {
+        printl("[respawnShield][ERROR] RespawnProtectThread: Something went wrong: " + exception);
     }
     #endif
 }
@@ -79,8 +79,12 @@ void function CleanupRespawnProtect(entity player, entity bubbleShield, array<en
     bubbleShield.EndSignal("OnDestroy");
     OnThreadEnd(
         function(): (player, bubbleShield, bubbleShieldFXs) {
-            player.ClearInvulnerable();
-            player.SetHealth(player.GetMaxHealth());
+            try {
+                player.ClearInvulnerable();
+                player.SetHealth(player.GetMaxHealth());
+            } catch(exception) {
+                printl("[respawnShield][ERROR] CleanupRespawnProtect: Something went wrong: " + exception);
+            }
             if (IsValid_ThisFrame(bubbleShield)) {
                 StopSoundOnEntity(bubbleShield, "BubbleShield_Sustain_Loop");
                 EmitSoundOnEntity(bubbleShield, "BubbleShield_End");
